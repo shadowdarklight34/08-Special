@@ -84,7 +84,7 @@ export class HeroScene extends BaseScene {
     this.tagline = el('p', { class: 'hero__tagline', text: crushTagline });
     this.hint = el('div', { class: 'hero__hint' }, [
       el('span', { class: 'hero__hint-icon', text: '✨' }),
-      el('span', { text: 'Hover or tap any photo to view memories' }),
+      el('span', { text: 'Tap any photo to view memories' }),
     ]);
 
     this.copy = el('div', { class: 'hero__copy' }, [

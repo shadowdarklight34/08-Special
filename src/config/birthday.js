@@ -135,7 +135,7 @@ export const birthdayConfig = {
 
   /** Performance budgets per device tier. Lower these if a phone struggles. */
   limits: {
-    trail:     { desktop: 26,  tablet: 20,  mobile: 16 },   // photos on the title-page filmstrip
+    trail:     { desktop: 26,  tablet: 20,  mobile: 11 },   // photos on the title-page filmstrip
     polaroids: { desktop: 9,   tablet: 6,   mobile: 5 },
     balloons:  { desktop: 22,  tablet: 16,  mobile: 12 },
     flying:    { desktop: 10,  tablet: 8,   mobile: 6 },    // photos flying through the stars

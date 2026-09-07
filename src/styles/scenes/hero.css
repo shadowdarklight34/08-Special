@@ -358,35 +358,44 @@
   .hero__copy {
     left: 20px;
     right: 20px;
-    top: calc(14% + var(--safe-top));
+    top: calc(9% + var(--safe-top));
     transform: none;
     max-width: none;
+    pointer-events: none;
+  }
+  .hero__copy > * {
+    pointer-events: auto;
   }
   .hero__badge {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     font-size: 0.68rem;
   }
   .hero__title {
-    font-size: clamp(2.6rem, 12vw, 3.8rem);
+    font-size: clamp(2.4rem, 11vw, 3.4rem);
+    line-height: 1.05;
   }
   .hero__rule-wrap {
-    margin: 16px 0 12px;
-    width: 180px;
+    margin: 14px 0 10px;
+    width: 170px;
   }
   .hero__tagline {
-    font-size: 0.85rem;
+    font-size: 0.86rem;
     max-width: 32ch;
+    line-height: 1.5;
   }
   .hero__hint {
-    margin-top: 14px;
-    font-size: 0.7rem;
+    margin-top: 12px;
+    font-size: 0.72rem;
+    padding: 6px 14px;
   }
   .trail__tile {
-    width: clamp(42px, 10vw, 56px);
+    width: clamp(44px, 12vw, 56px);
   }
   .hero__continue-btn {
-    padding: 10px 22px;
-    font-size: 0.88rem;
+    bottom: calc(20px + var(--safe-bottom));
+    right: 20px;
+    padding: 11px 24px;
+    font-size: 0.9rem;
   }
 }
 
