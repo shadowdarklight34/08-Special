@@ -167,9 +167,6 @@ export class Book {
       ]),
       el('div', { class: 'diary__photo-caption', text: `✦ Memory 0${pageNum} ✦` }),
     ];
-    if (quoteTag) {
-      photoCardChildren.push(el('div', { class: 'diary__photo-doodle', text: quoteTag }));
-    }
 
     const photoFrame = el('div', {
       class: `diary__photo-section ${isLeft ? 'diary__photo-section--left' : 'diary__photo-section--right'}`,
@@ -185,18 +182,12 @@ export class Book {
 
     const nodes = [header, photoFrame, pageNumMarker];
 
-    if (title || text || tease) {
+    if (title || text) {
       const noteChildren = [
         el('div', { class: 'diary__note-paperclip', 'aria-hidden': 'true' }),
         title ? el('h3', { class: 'face__note-title diary__note-title', text: title }) : null,
         text ? el('p', { class: 'face__note-text diary__note-text', text }) : null,
       ];
-      if (tease) {
-        noteChildren.push(el('div', { class: 'diary__note-tease' }, [
-          el('span', { class: 'diary__tease-icon', text: '✎' }),
-          el('span', { class: 'diary__tease-text', text: tease }),
-        ]));
-      }
       nodes.push(el('div', {
         class: `face__note diary__note ${isLeft ? 'face__note--left' : 'face__note--right'}`,
       }, noteChildren));

@@ -614,13 +614,13 @@
 /* ─── Notes on pages (Paperclip Diary Note) ─── */
 .face__note {
   position: absolute;
-  top: 46%;
-  width: clamp(160px, calc(var(--page-w) * 0.86), 285px);
+  top: 47%;
+  width: clamp(160px, calc(var(--page-w) * 0.86), 290px);
   max-width: 90%;
-  padding: 8px 12px 10px;
+  padding: 12px 14px 14px;
   background: rgba(255, 253, 247, 0.98);
   color: var(--ink);
-  box-shadow: 0 8px 20px rgba(30, 20, 10, 0.2);
+  box-shadow: 0 8px 22px rgba(30, 20, 10, 0.2);
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   z-index: 4;
@@ -658,60 +658,16 @@
 .face__note-title {
   font-family: var(--font-hand);
   font-weight: 700;
-  font-size: clamp(0.98rem, calc(var(--page-w) * 0.065), 1.35rem);
-  line-height: 1.1;
+  font-size: clamp(1.02rem, calc(var(--page-w) * 0.068), 1.45rem);
+  line-height: 1.15;
   color: #b8322d;
 }
 .face__note-text {
-  margin-top: 3px;
-  font-family: var(--font-hand);
-  font-size: clamp(0.88rem, calc(var(--page-w) * 0.054), 1.18rem);
-  line-height: 1.28;
-  color: #3b352e;
-}
-
-/* ─── Funny & Teasing Note Postscript ─── */
-.diary__note-tease {
   margin-top: 6px;
-  padding: 4px 7px;
-  background: rgba(254, 240, 138, 0.5);
-  border-left: 2.5px solid #d97706;
-  border-radius: 3px;
   font-family: var(--font-hand);
-  font-size: clamp(0.78rem, calc(var(--page-w) * 0.048), 1.05rem);
-  font-style: italic;
-  font-weight: 700;
-  color: #92400e;
-  line-height: 1.22;
-  display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-}
-.diary__tease-icon {
-  color: #d97706;
-  font-size: 0.85rem;
-  line-height: 1.1;
-  flex-shrink: 0;
-}
-.diary__tease-text {
-  flex: 1;
-}
-
-/* ─── Teasing Polaroid Doodle Tag ─── */
-.diary__photo-doodle {
-  display: inline-block;
-  margin-top: 2px;
-  padding: 1px 6px;
-  background: rgba(254, 215, 170, 0.55);
-  border: 1px dashed rgba(217, 119, 6, 0.5);
-  border-radius: 999px;
-  font-family: var(--font-hand);
-  font-size: clamp(0.65rem, calc(var(--page-w) * 0.038), 0.82rem);
-  font-weight: 700;
-  color: #9a3412;
-  text-align: center;
-  transform: rotate(-1.5deg);
+  font-size: clamp(0.92rem, calc(var(--page-w) * 0.058), 1.25rem);
+  line-height: 1.34;
+  color: #3b352e;
 }
 
 /* ─── Dear Diary Ending Entry ─── */
@@ -792,12 +748,10 @@
   .diary__photo-section { top: 6.5%; width: 54%; }
   .diary__photo-card { padding: 3px 3px 5px; }
   .diary__photo-caption { font-size: 0.58rem; margin-top: 1px; }
-  .diary__photo-doodle { font-size: 0.48rem; padding: 1px 4px; margin-top: 1px; }
   .diary__photo-tape { width: 34px; height: 11px; top: -6px; }
-  .face__note { top: 45%; max-width: 90%; padding: 5px 7px 6px; }
-  .face__note-title { font-size: 0.74rem; }
-  .face__note-text { font-size: 0.56rem; line-height: 1.22; margin-top: 2px; }
-  .diary__note-tease { font-size: 0.50rem; padding: 2px 4px; margin-top: 2px; gap: 3px; }
+  .face__note { top: 46%; max-width: 90%; padding: 6px 9px 8px; }
+  .face__note-title { font-size: 0.78rem; }
+  .face__note-text { font-size: 0.62rem; line-height: 1.25; margin-top: 3px; }
   .diary__note-paperclip { width: 8px; height: 18px; top: -6px; left: 10px; }
   .diary__end-entry { inset: 14px 8px; gap: 6px; }
   .diary__end-kicker { font-size: 0.54rem; letter-spacing: 0.1em; }
