@@ -4,72 +4,73 @@ import { random } from '../utils/random.js';
 
 /**
  * An interactive filmstrip ribbon of photos travelling along a looping path.
- * Photos sit at equal arc-length intervals, rotating with the path tangent.
- * 
- * Features:
- * - Smooth deceleration on hover so the user can comfortably inspect memories
- * - Hover elevation with 3D shadow and animated caption tooltip
- * - Direct click to open photo modal
- * - Interactive dragging/scrubbing along the loop
+ * Dynamically computes viewport-relative paths so photos are ALWAYS large,
+ * visible, beautiful, and perfectly positioned on both mobile and desktop.
  */
-const PATHS = {
-  landscape: {
-    box: { w: 1000, h: 600 },
-    d: 'M 350 630 C 400 550, 460 480, 530 435 C 470 395, 455 295, 520 240 C 585 190, 695 210, 715 300 C 730 375, 675 450, 600 440 C 730 430, 870 395, 1010 340 C 1070 315, 1120 290, 1180 270',
-  },
-  portrait: {
-    box: { w: 600, h: 1000 },
-    // Gentle sweeping ribbon across the lower screen (y: 740-820, safely below text)
-    d: 'M -80 810 C 100 750, 220 830, 340 770 C 450 720, 530 800, 680 760',
-  },
-};
-
 export function createPhotoTrail(container, {
   photos,
-  count = 24,
+  count = 12,
   reducedMotion = false,
   lapSeconds = 30,
   onPhotoClick = null,
 } = {}) {
-  const orientation = container.clientHeight > container.clientWidth ? 'portrait' : 'landscape';
-  const spec = PATHS[orientation];
-
   // Hidden SVG for getPointAtLength
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('aria-hidden', 'true');
   Object.assign(svg.style, { position: 'absolute', width: '0', height: '0', overflow: 'hidden', pointerEvents: 'none' });
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', spec.d);
   svg.append(path);
   container.append(svg);
 
-  // Sample path once into a lookup table
-  const length = path.getTotalLength();
   const SAMPLES = 1000;
   const table = [];
-  for (let i = 0; i <= SAMPLES; i++) {
-    const p = path.getPointAtLength((i / SAMPLES) * length);
-    const q = path.getPointAtLength(Math.min(length, (i / SAMPLES) * length + 1));
-    table.push({ x: p.x, y: p.y, a: (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI });
-  }
+  let W = container.clientWidth || window.innerWidth;
+  let H = container.clientHeight || window.innerHeight;
+  let isPortrait = H > W;
+
+  const buildPathTable = () => {
+    W = container.clientWidth || window.innerWidth;
+    H = container.clientHeight || window.innerHeight;
+    isPortrait = H > W;
+
+    let d;
+    if (isPortrait) {
+      // Mobile / Portrait:
+      // Flow smoothly across the lower section (y: ~68% to 76% of screen)
+      // Generously below headline, tagline, and hint badge
+      const yMid = H * 0.70;
+      const amp = Math.min(30, H * 0.038);
+      d = `M ${-140} ${yMid} C ${W * 0.22} ${yMid - amp}, ${W * 0.46} ${yMid + amp}, ${W * 0.72} ${yMid - amp * 0.8} C ${W * 0.88} ${yMid + amp * 0.6}, ${W * 1.05} ${yMid - amp * 0.3}, ${W + 160} ${yMid}`;
+    } else {
+      // Desktop / Landscape:
+      // Left 44% is copy. Right 56% is the flowing ribbon
+      const xStart = W * 0.40;
+      const xEnd = W + 160;
+      const yTop = H * 0.25;
+      const yBot = H * 0.75;
+      d = `M ${xStart - 40} ${yBot} C ${W * 0.52} ${yBot + 35}, ${W * 0.64} ${H * 0.54}, ${W * 0.75} ${H * 0.44} C ${W * 0.85} ${yTop - 25}, ${W * 0.95} ${yTop + 45}, ${xEnd} ${H * 0.36}`;
+    }
+
+    path.setAttribute('d', d);
+    const length = path.getTotalLength();
+    table.length = 0;
+    for (let i = 0; i <= SAMPLES; i++) {
+      const p = path.getPointAtLength((i / SAMPLES) * length);
+      const q = path.getPointAtLength(Math.min(length, (i / SAMPLES) * length + 1));
+      table.push({ x: p.x, y: p.y, a: (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI });
+    }
+  };
+
+  buildPathTable();
+
   const at = (u) => {
     const f = (((u % 1) + 1) % 1) * SAMPLES;
     const i = Math.floor(f);
     const t = f - i;
-    const a = table[i];
-    const b = table[Math.min(SAMPLES, i + 1)];
+    const a = table[i] || table[0];
+    const b = table[Math.min(SAMPLES, i + 1)] || a;
     return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, a: a.a };
   };
-
-  // Contain-fit authored box inside container
-  let scale = 1, ox = 0, oy = 0;
-  const fit = () => {
-    const W = container.clientWidth, H = container.clientHeight;
-    scale = Math.min(W / spec.box.w, H / spec.box.h);
-    ox = (W - spec.box.w * scale) / 2;
-    oy = (H - spec.box.h * scale) / 2;
-  };
-  fit();
 
   const layer = el('div', { class: 'trail' });
 
@@ -86,17 +87,17 @@ export function createPhotoTrail(container, {
       src: asset(photo.src),
       alt: photo.alt || '',
       draggable: 'false',
-      loading: i < 12 ? 'eager' : 'lazy',
+      loading: i < 8 ? 'eager' : 'lazy',
       decoding: 'async',
     });
 
     const TAPE_PALETTE = [
-      { bg: 'rgba(245, 158, 11, 0.48)', rot: -4 },
-      { bg: 'rgba(244, 114, 182, 0.48)', rot: 3 },
-      { bg: 'rgba(56, 189, 248, 0.48)', rot: -2 },
-      { bg: 'rgba(168, 85, 247, 0.48)', rot: 4 },
-      { bg: 'rgba(52, 211, 153, 0.48)', rot: -3 },
-      { bg: 'rgba(251, 146, 60, 0.48)', rot: 2 },
+      { bg: 'rgba(245, 158, 11, 0.65)', rot: -3 },
+      { bg: 'rgba(244, 114, 182, 0.65)', rot: 3 },
+      { bg: 'rgba(56, 189, 248, 0.65)', rot: -2 },
+      { bg: 'rgba(168, 85, 247, 0.65)', rot: 2 },
+      { bg: 'rgba(52, 211, 153, 0.65)', rot: -3 },
+      { bg: 'rgba(251, 146, 60, 0.65)', rot: 3 },
     ];
     const tapeSpec = TAPE_PALETTE[i % TAPE_PALETTE.length];
     const tape = el('span', {
@@ -107,13 +108,17 @@ export function createPhotoTrail(container, {
         transform: `translateX(-50%) rotate(${tapeSpec.rot}deg)`,
       },
     });
-    const caption = el('span', { class: 'trail__caption', text: photo.caption || '' });
+
+    const chinText = photo.caption ? photo.caption.replace(/[^\w\s✨🌸🍰🎂🎧💫👑]/gi, '').trim() : `Memory 0${(i % 9) + 1}`;
+    const chinCaption = el('span', { class: 'trail__chin-caption', text: chinText });
+    const tooltipCaption = el('span', { class: 'trail__caption', text: photo.caption || '' });
+
     const tile = el('div', {
       class: 'trail__tile',
       role: 'button',
       tabindex: '0',
       'aria-label': photo.caption || photo.alt || 'View photo memory',
-    }, [tape, img, caption]);
+    }, [tape, img, chinCaption, tooltipCaption]);
 
     tile.dataset.src = photo.src;
     tile.dataset.caption = photo.caption || '';
@@ -122,7 +127,7 @@ export function createPhotoTrail(container, {
     // Hover slowdown + zoom
     tile.addEventListener('pointerenter', () => {
       tile.classList.add('is-hovered');
-      gsap.to(speedFactor, { val: 0.08, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      gsap.to(speedFactor, { val: 0.1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
     });
 
     tile.addEventListener('pointerleave', () => {
@@ -150,7 +155,7 @@ export function createPhotoTrail(container, {
       el: tile,
       baseU: i / count,
       u: i / count,
-      tilt: random(-8, 8),
+      tilt: random(-6, 6),
       setX: gsap.quickSetter(tile, 'x', 'px'),
       setY: gsap.quickSetter(tile, 'y', 'px'),
       setR: gsap.quickSetter(tile, 'rotation', 'deg'),
@@ -162,16 +167,17 @@ export function createPhotoTrail(container, {
 
   const place = (tile) => {
     const p = at(tile.u + uOffset);
-    tile.setX(ox + p.x * scale);
-    tile.setY(oy + p.y * scale);
-    tile.setR(p.a * 0.92 + tile.tilt);
+    tile.setX(p.x);
+    tile.setY(p.y);
+    const clampedAngle = Math.max(-14, Math.min(14, p.a * 0.25));
+    tile.setR(clampedAngle + tile.tilt);
   };
   tiles.forEach(place);
 
   // Dragging / scrubbing along ribbon
   const onPointerDown = (e) => {
     if (e.button != null && e.button !== 0) return;
-    if (e.target.closest('.trail__tile')) return; // let tile handle clicks
+    if (e.target.closest('.trail__tile')) return;
     isDragging = true;
     dragStartX = e.clientX;
     dragStartU = uOffset;
@@ -180,7 +186,7 @@ export function createPhotoTrail(container, {
   const onPointerMove = (e) => {
     if (!isDragging) return;
     const dx = e.clientX - dragStartX;
-    uOffset = dragStartU + (dx / (spec.box.w * scale)) * 0.7;
+    uOffset = dragStartU + (dx / Math.max(400, W)) * 0.8;
     tiles.forEach(place);
   };
 
@@ -204,7 +210,7 @@ export function createPhotoTrail(container, {
   };
 
   const onResize = () => {
-    fit();
+    buildPathTable();
     tiles.forEach(place);
   };
   window.addEventListener('resize', onResize);
@@ -217,7 +223,7 @@ export function createPhotoTrail(container, {
     scale: 1,
     duration: reducedMotion ? 0.4 : 0.95,
     ease: 'back.out(1.7)',
-    stagger: { each: 0.035, from: 'end' },
+    stagger: { each: 0.04, from: 'start' },
   });
 
   return {
