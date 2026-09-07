@@ -1,0 +1,39 @@
+/*
+ * Compositions change per breakpoint, not just sizes.
+ *   mobile   < 768px   vertical compositions, fewer elements, bigger touch targets
+ *   tablet   768–1023  smaller compositions
+ *   desktop  ≥ 1024    full composition, mouse interaction
+ */
+
+@media (max-width: 767px) {
+  .btn { min-height: 44px; padding: 10px 20px; font-size: 0.92rem; }
+  .continue-btn { right: 16px; bottom: calc(52px + var(--safe-bottom)); }
+  .music-pill {
+    padding: 0 8px 0 10px;
+    gap: 6px;
+    height: 34px;
+    right: 12px;
+    top: calc(10px + var(--safe-top));
+  }
+  .music-pill__info {
+    max-width: 86px;
+  }
+  .music-pill__artist {
+    display: none;
+  }
+  .music-drawer__panel {
+    top: auto;
+    bottom: calc(16px + var(--safe-bottom));
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: 80vh;
+    border-radius: 20px;
+  }
+}
+
+/* Short landscape phones */
+@media (max-height: 480px) and (orientation: landscape) {
+  .continue-btn { bottom: calc(14px + var(--safe-bottom)); }
+  .progress-indicator { display: none; }
+}

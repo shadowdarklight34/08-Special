@@ -1,0 +1,280 @@
+/* ─── The big birthday celebration number ─── */
+.birthday__number {
+  color: #ffd700;
+  background: linear-gradient(
+    135deg,
+    #ff2a85 0%,
+    #ff7300 18%,
+    #ffd700 36%,
+    #00f5d4 54%,
+    #00d2ff 72%,
+    #b5179e 90%,
+    #ff2a85 100%
+  ) 0 0 / 250% 250%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255, 42, 133, 0.6));
+  opacity: 0.95;
+  will-change: transform;
+  animation: bignumRainbow 8s linear infinite, bignumBreathe 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes bignumRainbow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes bignumBreathe {
+  0%   { transform: translate(-50%, -50%) scale(0.97); }
+  100% { transform: translate(-50%, -50%) scale(1.02); }
+}
+
+/* Romantic glowing ambient halo behind the number (pure hardware-accelerated radial gradient, zero blur filter) */
+.birthday__halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(740px, 95vmin);
+  height: min(740px, 95vmin);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 42, 133, 0.3) 0%, rgba(255, 215, 0, 0.2) 32%, rgba(139, 92, 246, 0.1) 58%, transparent 72%);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: haloPulse 5s ease-in-out infinite alternate;
+}
+
+@keyframes haloPulse {
+  0%   { transform: translate(-50%, -50%) scale(0.88); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+}
+
+/* Twinkling ambient star sparkles across the sky */
+.birthday__stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.birthday__star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px #fff, 0 0 16px rgba(255, 215, 0, 0.85);
+  animation: starTwinkle 3.2s ease-in-out infinite alternate;
+}
+@keyframes starTwinkle {
+  0%   { transform: scale(0.3); opacity: 0.15; }
+  100% { transform: scale(1.3); opacity: 0.95; }
+}
+
+.birthday__balloons {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── Balloons (generated, CSS-animated) ─── */
+.balloon {
+  --size: 90px;
+  --x: 50%;
+  --rot: 0deg;
+  --sway: 20px;
+  --delay: 0s;
+  --duration: 11s;
+  --c1: #ffe680; --c2: #ffd23f; --c3: #e0a800;
+  position: absolute;
+  left: var(--x);
+  bottom: calc(-1 * var(--size) * 2.2);
+  width: var(--size);
+  height: calc(var(--size) * 1.18);
+  border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 16%, rgba(255, 255, 255, 0) 40%),
+    radial-gradient(circle at 50% 45%, var(--c1) 0%, var(--c2) 55%, var(--c3) 100%);
+  box-shadow:
+    inset -12px -16px 26px rgba(0, 0, 0, 0.28),
+    inset 8px 10px 20px rgba(255, 255, 255, 0.25),
+    0 24px 34px rgba(0, 0, 0, 0.32);
+  opacity: 0.96;
+  will-change: transform;
+  animation: balloon-rise var(--duration) linear var(--delay) both;
+}
+.balloon::before { /* knot */
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 14px;
+  height: 11px;
+  transform: translateX(-50%);
+  background: var(--c3);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.balloon::after { /* string */
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1.5px;
+  height: calc(var(--size) * 1.7);
+  margin-top: 8px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.05));
+  transform-origin: top;
+  transform: translateX(-50%) rotate(calc(var(--rot) * -0.7));
+}
+.balloon--near {
+  filter: blur(2.5px);
+  opacity: 0.85;
+}
+
+/* Glossy vector heart balloon */
+.balloon--heart {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.balloon__heart-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.32));
+}
+
+@keyframes balloon-rise {
+  0%   { transform: translate3d(0, 0, 0) rotate(var(--rot)); }
+  25%  { transform: translate3d(var(--sway), -40vh, 0) rotate(calc(var(--rot) * -1)); }
+  50%  { transform: translate3d(0, -80vh, 0) rotate(var(--rot)); }
+  75%  { transform: translate3d(calc(var(--sway) * -1), -120vh, 0) rotate(calc(var(--rot) * -1)); }
+  100% { transform: translate3d(0, -175vh, 0) rotate(var(--rot)); }
+}
+
+/* ─── Puffy "Happy Birthday" letters ─── */
+.bubble-row {
+  position: absolute;
+  left: 50%;
+  top: 104%;
+  transform: translateX(-50%);
+  width: min(96vw, 1400px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: clamp(28px, 5vw, 84px);
+  row-gap: 0.2em;
+  z-index: 4;
+  pointer-events: none;
+}
+.bubble-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34em;
+}
+.bubble {
+  display: inline-block;
+  font-family: var(--font-bubble);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6.6vw, 5.2rem);
+  line-height: 1;
+  padding: 0.04em 0.05em;
+  color: #fff;
+  background: radial-gradient(circle at 35% 24%, #ffffff 0%, rgba(255, 255, 255, 0.8) 18%, var(--letter-c, #ff5e87) 50%, var(--letter-dark, #d62250) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter:
+    drop-shadow(0 3px 0 var(--letter-dark, #d62250))
+    drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  will-change: transform;
+}
+.bubble--emoji {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  font-size: clamp(2rem, 5.8vw, 4.4rem);
+  color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35));
+}
+
+/* Romantic celebration wish badge under the number */
+.birthday__wish-badge {
+  position: absolute;
+  bottom: calc(13% + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 42, 133, 0.35);
+  color: #fff;
+  font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  z-index: 5;
+  white-space: nowrap;
+  animation: wishPulse 3.5s ease-in-out infinite alternate;
+}
+.wish-badge__text {
+  background: linear-gradient(90deg, #ffffff 0%, #ffe4ec 40%, #ffd700 80%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.wish-badge__heart {
+  font-size: 1.15em;
+  animation: heartPop 1.8s ease-in-out infinite alternate;
+}
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.22); }
+}
+@keyframes wishPulse {
+  0%   { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 42, 133, 0.25); transform: translateX(-50%) scale(1); }
+  100% { box-shadow: 0 12px 38px rgba(0, 0, 0, 0.55), 0 0 35px rgba(255, 215, 0, 0.4); transform: translateX(-50%) scale(1.025); }
+}
+
+/* Floating tap hearts */
+.birthday__tap-heart {
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 10px rgba(255, 42, 133, 0.8));
+}
+
+@media (max-width: 767px) {
+  .bubble-row { column-gap: 16px; row-gap: 0.35em; }
+  .bubble {
+    font-size: clamp(2rem, 11vw, 3.4rem);
+    filter: drop-shadow(0 2px 0 var(--letter-dark, #d62250)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  }
+  .bubble--emoji { font-size: clamp(1.7rem, 9vw, 2.8rem); }
+  .birthday__number {
+    filter: drop-shadow(0 0 14px rgba(255, 42, 133, 0.5));
+  }
+  .birthday__wish-badge {
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    gap: 8px;
+    bottom: calc(11% + var(--safe-bottom));
+    backdrop-filter: blur(8px);
+  }
+  .balloon--near {
+    filter: none;
+    opacity: 0.8;
+  }
+  .birthday__star {
+    box-shadow: 0 0 4px #fff;
+  }
+}

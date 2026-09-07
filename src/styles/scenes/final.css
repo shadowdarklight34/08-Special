@@ -1,0 +1,746 @@
+.final__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 40% 45%, rgba(88, 28, 135, 0.28) 0%, rgba(29, 78, 216, 0.14) 45%, transparent 70%),
+    radial-gradient(circle at 75% 30%, rgba(217, 119, 6, 0.16) 0%, rgba(13, 23, 58, 0.05) 55%, transparent 70%),
+    radial-gradient(120% 100% at 50% 50%, #0d173a 0%, #080d24 55%, #030612 100%);
+}
+
+.final__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.final__fly {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* ─── 3D World Viewport & Camera Rig ─── */
+.world-3d {
+  position: absolute;
+  inset: 0;
+  perspective: 1100px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+.world-3d.is-dragging {
+  cursor: grabbing;
+}
+
+.world-3d__camera {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ─── Celestial 3D Orbit Rings ─── */
+.world-3d__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+.world-3d__ring--1 {
+  width: 1400px;
+  height: 1400px;
+  margin-left: -700px;
+  margin-top: -700px;
+  border: 1.5px dashed rgba(245, 158, 11, 0.22);
+  box-shadow: 0 0 50px rgba(245, 158, 11, 0.1), inset 0 0 50px rgba(245, 158, 11, 0.08);
+  transform: rotateX(74deg) rotateZ(22deg);
+}
+.world-3d__ring--2 {
+  width: 960px;
+  height: 960px;
+  margin-left: -480px;
+  margin-top: -480px;
+  border: 1px solid rgba(147, 197, 253, 0.18);
+  box-shadow: 0 0 40px rgba(147, 197, 253, 0.12);
+  transform: rotateX(62deg) rotateZ(-38deg);
+}
+
+.world-3d__hint {
+  position: absolute;
+  top: calc(18px + var(--safe-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px 6px 20px;
+  border-radius: 999px;
+  background: rgba(13, 23, 58, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.world-3d__rotate-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fde047;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.2s, transform 0.2s;
+  user-select: none;
+}
+.world-3d__rotate-toggle:hover {
+  background: rgba(245, 158, 11, 0.38);
+  transform: scale(1.04);
+}
+.world-3d__rotate-toggle.is-paused {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ─── 3D Photo Cards ─── */
+.fly {
+  position: absolute;
+  left: -65px;
+  top: -85px;
+  width: 130px;
+  padding: 6px 6px 8px;
+  background: rgba(16, 24, 52, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 18px rgba(245, 158, 11, 0.15);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fly__shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.fly:hover,
+.fly.is-hovered,
+.fly:focus-visible {
+  z-index: 400 !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.65) !important;
+}
+
+.fly__img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #090e24;
+}
+.fly__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.15) contrast(1.05);
+  transition: transform 0.3s ease;
+}
+.fly:hover .fly__img img,
+.fly.is-hovered .fly__img img {
+  transform: scale(1.06);
+}
+
+.fly__caption {
+  margin-top: 6px;
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fde047;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* ─── Final Message Card (Celestial Glass) ─── */
+.final__center {
+  pointer-events: none !important;
+}
+
+.final__content {
+  position: relative;
+  z-index: 5;
+  max-width: min(92vw, 520px);
+  max-height: calc(100vh - 36px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(251, 113, 133, 0.4) transparent;
+  padding: clamp(22px, 3.4vh, 30px) clamp(18px, 3.2vw, 28px);
+  border-radius: 26px;
+  background: radial-gradient(130% 110% at 50% 0%, rgba(30, 22, 58, 0.94) 0%, rgba(12, 16, 42, 0.96) 55%, rgba(6, 9, 28, 0.98) 100%);
+  border: 1.5px solid rgba(253, 164, 175, 0.38);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(244, 114, 182, 0.22), 0 0 50px rgba(245, 158, 11, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.final__content::-webkit-scrollbar {
+  width: 5px;
+}
+.final__content::-webkit-scrollbar-thumb {
+  background: rgba(251, 113, 133, 0.45);
+  border-radius: 999px;
+}
+
+/* ─── Cute Pookie Top Badge ─── */
+.final__pookie-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.22), rgba(245, 158, 11, 0.18));
+  border: 1px solid rgba(253, 164, 175, 0.55);
+  box-shadow: 0 4px 14px rgba(244, 114, 182, 0.25);
+  margin-bottom: 8px;
+  user-select: none;
+}
+.pookie-bow {
+  font-size: 1.05rem;
+  filter: drop-shadow(0 2px 4px rgba(244, 114, 182, 0.45));
+  animation: pookieBowWiggle 3.2s ease-in-out infinite;
+}
+.pookie-badge-text {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #fbcfe8;
+  text-transform: uppercase;
+}
+.pookie-sparkle {
+  color: #fef08a;
+  font-size: 0.85rem;
+  animation: pookieSparklePulse 2s infinite alternate;
+}
+@keyframes pookieBowWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+@keyframes pookieSparklePulse {
+  0% { transform: scale(0.9); opacity: 0.75; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+.final__title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.15rem, 3vw, 1.7rem);
+  letter-spacing: 0.04em;
+  color: #fef08a;
+  text-shadow: 0 2px 14px rgba(245, 158, 11, 0.45);
+}
+
+/* ─── Pookie Name Wrap & Floating Charm ─── */
+.final__name-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.25s var(--ease-out);
+}
+.final__name-wrap:hover,
+.final__name-wrap:active {
+  transform: scale(1.06);
+}
+.final__name {
+  font-family: var(--font-serif);
+  font-weight: 900;
+  font-size: clamp(2.8rem, 8vw, 4.6rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #f43f5e 0%, #fb7185 25%, #f59e0b 60%, #fef08a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 20px rgba(244, 63, 94, 0.45));
+}
+.final__name-charm {
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  filter: drop-shadow(0 2px 8px rgba(244, 114, 182, 0.6));
+  animation: pookieCharmFloat 3s ease-in-out infinite alternate;
+}
+@keyframes pookieCharmFloat {
+  0% { transform: translateY(0) rotate(-4deg); }
+  100% { transform: translateY(-6px) rotate(8deg); }
+}
+
+/* ─── Pookie Compliment Pills ─── */
+.final__pookie-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.pookie-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+.pookie-pill:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+.pookie-pill--pink {
+  background: rgba(244, 114, 182, 0.16);
+  border: 1px solid rgba(251, 113, 133, 0.5);
+  color: #fbcfe8;
+}
+.pookie-pill--gold {
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(254, 240, 138, 0.5);
+  color: #fef08a;
+}
+.pookie-pill--peach {
+  background: rgba(251, 146, 60, 0.16);
+  border: 1px solid rgba(253, 186, 116, 0.5);
+  color: #fed7aa;
+}
+
+.final__lines {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.final__line {
+  font-size: clamp(0.92rem, 1.8vw, 1.08rem);
+  line-height: 1.55;
+  color: rgba(240, 235, 245, 0.94);
+}
+
+.final__signature {
+  margin-top: 12px;
+  font-family: var(--font-hand);
+  font-size: clamp(1.3rem, 2.7vw, 1.75rem);
+  color: #fde047;
+  text-shadow: 0 2px 10px rgba(245, 158, 11, 0.45);
+}
+
+/* Floating sparkles on tapping her name */
+.final__pookie-sparkle-fly {
+  position: fixed;
+  pointer-events: none;
+  font-size: 20px;
+  z-index: 9999;
+  user-select: none;
+}
+
+/* ─── Birthday Wish Box ─── */
+.final__wish-box {
+  margin-top: 16px;
+  padding: 18px 18px 20px;
+  border-radius: 20px;
+  background: radial-gradient(120% 120% at 50% 0%, rgba(26, 38, 82, 0.78) 0%, rgba(10, 16, 42, 0.88) 100%);
+  border: 1px solid rgba(254, 240, 138, 0.32);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 24px rgba(245, 158, 11, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  text-align: center;
+}
+
+.wish-box__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fde047;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(254, 240, 138, 0.28);
+  padding: 3px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.wish-box__title {
+  font-size: clamp(1.08rem, 2.2vw, 1.3rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.wish-box__prompt {
+  margin-top: 8px;
+  font-size: clamp(0.92rem, 1.9vw, 1.05rem);
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}
+
+.wish-box__choices {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.wish-box__choice-btn {
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  user-select: none;
+}
+
+.wish-box__choice-btn--yes {
+  background: rgba(245, 158, 11, 0.22);
+  border: 1.5px solid rgba(254, 240, 138, 0.55);
+  color: #fde047;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+}
+.wish-box__choice-btn--yes:hover,
+.wish-box__choice-btn--yes.is-selected {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-color: #fde047;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.55);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.wish-box__choice-btn--no {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  color: rgba(255, 255, 255, 0.85);
+}
+.wish-box__choice-btn--no:hover,
+.wish-box__choice-btn--no.is-selected {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(248, 113, 113, 0.7);
+  color: #fca5a5;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.wish-box__response-banner {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(254, 240, 138, 0.08);
+  border: 1px dashed rgba(254, 240, 138, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.wish-box__quote {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  color: #fde047;
+  line-height: 1.35;
+  text-shadow: 0 2px 12px rgba(245, 158, 11, 0.45);
+  letter-spacing: 0.01em;
+}
+
+.wish-box__subtitle {
+  margin-top: 4px;
+  font-family: var(--font-sans);
+  font-size: clamp(0.78rem, 1.6vw, 0.88rem);
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+  max-width: 44ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wish-box__form {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.wish-box__privacy {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+
+.wish-box__textarea {
+  width: 100%;
+  max-width: 440px;
+  padding: 11px 15px;
+  border-radius: 12px;
+  background: rgba(6, 11, 30, 0.85);
+  border: 1px solid rgba(254, 240, 138, 0.22);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  resize: none;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+.wish-box__textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+.wish-box__textarea:focus {
+  border-color: #f59e0b;
+  background: rgba(10, 17, 44, 0.95);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.38), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.wish-box__submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
+  border: 1px solid rgba(254, 240, 138, 0.4);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 22px rgba(217, 119, 6, 0.45);
+  cursor: pointer;
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s;
+}
+.wish-box__submit-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(217, 119, 6, 0.6);
+}
+
+.wish-box__error {
+  color: #f87171;
+  font-size: 0.82rem;
+  margin-top: -2px;
+}
+
+.wish-box__success {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.wish-box__stamp {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1.5px dashed #fde047;
+  color: #fde047;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.wish-box__success-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 4px;
+}
+
+.wish-box__success-sub {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 38ch;
+  line-height: 1.45;
+}
+
+.wish-box__share-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.wish-box__wa-btn {
+  background: #25d366 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  font-weight: 600 !important;
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35) !important;
+}
+.wish-box__wa-btn:hover {
+  background: #20ba59 !important;
+  transform: translateY(-2px) !important;
+}
+
+.wish-box__copy-btn {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.wish-box__toast {
+  font-size: 0.78rem;
+  color: #fde047;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ─── Action Buttons ─── */
+.final__actions {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.final__toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #fde047;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.final__toggle-btn:hover {
+  background: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.7);
+  transform: translateY(-2px);
+}
+
+/* Floating Restore Button when message is minimized */
+.final__restore-btn {
+  position: fixed;
+  bottom: calc(24px + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  background: rgba(9, 14, 38, 0.88);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  backdrop-filter: blur(14px);
+  color: #fde047;
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.35);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.25s var(--ease-out), background 0.25s, box-shadow 0.25s;
+  animation: restoreGlow 2.8s ease-in-out infinite alternate;
+}
+.final__restore-btn:hover {
+  transform: translateX(-50%) translateY(-2px) scale(1.04);
+  background: rgba(14, 20, 52, 0.95);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 158, 11, 0.5);
+}
+
+@keyframes restoreGlow {
+  0% { box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6), 0 0 14px rgba(245, 158, 11, 0.25); }
+  100% { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 24px rgba(245, 158, 11, 0.45); }
+}
+
+@media (max-width: 767px) {
+  .fly {
+    width: 110px;
+    left: -55px;
+    top: -72px;
+    padding: 5px 5px 7px;
+  }
+  .fly__caption {
+    font-size: 1rem;
+  }
+  .final__content {
+    padding: 26px 18px;
+    max-height: calc(100vh - 36px);
+    max-height: calc(100dvh - 36px);
+  }
+  .final__wish-box {
+    padding: 16px 14px;
+    margin-top: 18px;
+  }
+  .world-3d__hint {
+    top: calc(52px + var(--safe-top));
+    font-size: 0.66rem;
+    padding: 4px 12px;
+    max-width: calc(100% - 24px);
+  }
+  .world-3d__ring--1 {
+    width: 900px;
+    height: 900px;
+    margin-left: -450px;
+    margin-top: -450px;
+  }
+  .world-3d__ring--2 {
+    width: 650px;
+    height: 650px;
+    margin-left: -325px;
+    margin-top: -325px;
+  }
+}

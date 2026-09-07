@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Happy Birthday ❤️</title>
+  <meta name="description" content="A little birthday surprise, made with love." />
+  <meta name="theme-color" content="#0b1330" />
+  <meta property="og:title" content="Happy Birthday ❤️" />
+  <meta property="og:description" content="A little birthday surprise, made with love." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Caveat:wght@500;700&family=Fredoka:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="app" data-theme="dark">
+    <!-- Each section is an independent scene. Scenes populate their own root on enter() and clear it on exit(). -->
+    <section class="scene scene--loading"   id="scene-loading"   data-scene="loading"   aria-label="Loading"></section>
+    <section class="scene scene--countdown" id="scene-countdown" data-scene="countdown" aria-label="Counting the years"></section>
+    <section class="scene scene--birthday"  id="scene-birthday"  data-scene="birthday"  aria-label="Birthday reveal"></section>
+    <section class="scene scene--hero"      id="scene-hero"      data-scene="hero"      aria-label="Happy birthday"></section>
+    <section class="scene scene--memory"    id="scene-memory"    data-scene="memory"    aria-label="Polaroid wall"></section>
+    <section class="scene scene--scrapbook" id="scene-scrapbook" data-scene="scrapbook" aria-label="Scrapbook"></section>
+    <section class="scene scene--final"     id="scene-final"     data-scene="final"     aria-label="Final message"></section>
+
+    <!-- Global UI that lives above every scene -->
+    <div id="ui-layer" hidden>
+      <div id="music-button-mount"></div>
+      <div id="progress-indicator-mount"></div>
+    </div>
+
+    <!-- Reusable photo modal renders here -->
+    <div id="modal-root"></div>
+  </div>
+
+  <noscript>
+    <p style="padding:2rem;font-family:sans-serif;color:#fff">This birthday surprise needs JavaScript to play. ❤️</p>
+  </noscript>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

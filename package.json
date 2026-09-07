@@ -1,0 +1,18 @@
+{
+  "name": "birthday-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "An interactive, scene-based birthday experience built with HTML, CSS, vanilla JS and GSAP.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0"
+  }
+}

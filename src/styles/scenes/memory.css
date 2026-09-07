@@ -1,0 +1,303 @@
+.memory__field {
+  position: absolute;
+  inset: 0;
+}
+
+/* ─── Mood Board Header ─── */
+.memory__header {
+  position: absolute;
+  left: 50%;
+  top: calc(20px + var(--safe-top));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 5;
+  pointer-events: none;
+  text-align: center;
+}
+
+.memory__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: rgba(28, 27, 26, 0.05);
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  font-weight: 600;
+  color: #1e1b28;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+.memory__badge-star {
+  color: #f59e0b;
+  font-style: normal;
+  font-size: 0.85rem;
+}
+
+.memory__kicker {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #787285;
+}
+
+/* ─── Interactive Shuffle Button ─── */
+.memory__shuffle-btn {
+  position: absolute;
+  left: 28px;
+  top: calc(20px + var(--safe-top));
+  padding: 8px 16px;
+  min-height: 38px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1e1b28;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(28, 27, 26, 0.15);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s, border-color 0.25s;
+}
+.memory__shuffle-btn:hover {
+  background: #ffffff;
+  border-color: rgba(245, 158, 11, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(245, 158, 11, 0.2);
+}
+
+/* ─── Aesthetic Scrapbook Stickers ─── */
+.memory__sticker {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.memory__sticker--gold {
+  top: 13%;
+  left: 3%;
+  transform: rotate(-8deg);
+  background: #fef08a;
+  color: #854d0e;
+  border: 1px dashed rgba(133, 77, 14, 0.35);
+}
+.memory__sticker--pink {
+  bottom: 12%;
+  left: 4%;
+  transform: rotate(6deg);
+  background: #fce7f3;
+  color: #9d174d;
+  border: 1px dashed rgba(157, 23, 77, 0.35);
+}
+.memory__sticker--star {
+  top: 14%;
+  right: 4%;
+  transform: rotate(7deg);
+  background: #ede9fe;
+  color: #5b21b6;
+  border: 1px dashed rgba(91, 33, 182, 0.35);
+}
+.memory__sticker--peach {
+  top: 50%;
+  left: 2%;
+  transform: rotate(-5deg);
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px dashed rgba(194, 65, 12, 0.35);
+}
+.memory__sticker--mint {
+  bottom: 14%;
+  right: 22%;
+  transform: rotate(-4deg);
+  background: #ccfbf1;
+  color: #0f766e;
+  border: 1px dashed rgba(15, 118, 110, 0.35);
+}
+
+/* ─── Polaroid Card Enhancements ─── */
+.polaroid {
+  --x: 50%;
+  --y: 50%;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: clamp(140px, 12.8vw, 192px);
+  padding: 10px 10px 46px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 16px 36px rgba(40, 30, 20, 0.16), 0 2px 6px rgba(40, 30, 20, 0.08);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+  z-index: 1;
+  transition: box-shadow 0.25s ease;
+}
+.polaroid::before {
+  /* Subtle border line */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+}
+.polaroid.is-dragging {
+  cursor: grabbing;
+  box-shadow: 0 32px 64px rgba(40, 30, 20, 0.3), 0 6px 14px rgba(40, 30, 20, 0.15);
+  z-index: 100 !important;
+}
+.polaroid:hover {
+  box-shadow: 0 24px 48px rgba(40, 30, 20, 0.22), 0 4px 10px rgba(40, 30, 20, 0.12);
+}
+.polaroid:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+}
+.polaroid__image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #eee;
+  border-radius: 2px;
+}
+.polaroid__image::after {
+  /* Glossy diagonal sheen reflection */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 25%, transparent 55%);
+  pointer-events: none;
+}
+.polaroid__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  filter: saturate(1.06) contrast(1.03);
+}
+.polaroid__caption {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 10px;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 1.45rem;
+  line-height: 1.15;
+  color: #1e1b24;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.polaroid__pin {
+  position: absolute;
+  top: -14px;
+  right: -9px;
+  width: 36px;
+  height: 36px;
+  transform: rotate(14deg);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+.polaroid:hover .polaroid__pin {
+  transform: rotate(18deg) scale(1.1);
+}
+.polaroid__pin svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Washi tape strip style */
+.polaroid__washi-tape {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 58px;
+  height: 20px;
+  background: rgba(254, 215, 170, 0.88);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255, 255, 255, 0.45) 4px, rgba(255, 255, 255, 0.45) 8px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-left: 2px dashed rgba(217, 119, 6, 0.35);
+  border-right: 2px dashed rgba(217, 119, 6, 0.35);
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 1px;
+}
+
+/* Sparkle drops when releasing card */
+.memory__drop-sparkle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 200;
+  font-size: 18px;
+  color: #f59e0b;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6));
+}
+
+@media (max-width: 767px) {
+  .polaroid { width: clamp(126px, 39vw, 156px); padding: 6px 6px 32px; }
+  .polaroid__caption { font-size: 1.15rem; bottom: 6px; }
+  .polaroid__pin { width: 24px; height: 24px; top: -9px; right: -6px; }
+  .memory__header {
+    top: calc(54px + var(--safe-top));
+    width: calc(100% - 24px);
+    max-width: 320px;
+    gap: 4px;
+  }
+  .memory__badge { font-size: 0.82rem; padding: 4px 12px; }
+  .memory__kicker { font-size: 0.58rem; letter-spacing: 0.1em; }
+  .memory__shuffle-btn { display: none; }
+  .memory__sticker { display: none; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .polaroid { width: 22vw; }
+  .memory__sticker { transform: scale(0.85); }
+}
+
+/* ─── Luxury Memory Continue Button ─── */
+#scene-memory .continue-btn {
+  background: rgba(255, 255, 255, 0.94);
+  color: #1e1b28;
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 10px 22px;
+  border-radius: 999px;
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s, border-color 0.25s, background 0.25s;
+}
+#scene-memory .continue-btn:hover {
+  background: #ffffff;
+  border-color: rgba(245, 158, 11, 0.85);
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}

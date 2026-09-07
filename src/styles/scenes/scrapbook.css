@@ -1,0 +1,874 @@
+:root {
+  --page-w: min(36vw, 400px, calc(62vh / 1.34));
+  --page-h: calc(var(--page-w) * 1.34);
+}
+@media (max-width: 767px) {
+  :root { --page-w: min(44vw, 175px, calc(50vh / 1.34)); }
+}
+
+.scrapbook__layout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(40px + var(--safe-top)) 16px calc(60px + var(--safe-bottom));
+}
+.scrapbook__ambient-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 55% at 50% 50%, rgba(245, 158, 11, 0.14) 0%, rgba(236, 72, 153, 0.06) 45%, transparent 75%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Scrapbook Header Badge ─── */
+.scrapbook__badge {
+  position: absolute;
+  left: 50%;
+  top: calc(20px + var(--safe-top));
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  border-radius: 999px;
+  background: rgba(16, 9, 36, 0.85);
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.92rem, 1.3vw, 1.12rem);
+  font-weight: 600;
+  color: #fef08a;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  z-index: 15;
+  pointer-events: none;
+}
+.scrapbook__badge-star {
+  color: #f59e0b;
+  font-style: normal;
+}
+
+/* ─── Side Navigation Arrows ─── */
+.scrapbook__nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 1.7rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s var(--ease-out), background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.scrapbook__nav-btn:hover {
+  background: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.8);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+}
+.scrapbook__nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+.scrapbook__nav-btn--prev { left: clamp(12px, 3.5vw, 42px); }
+.scrapbook__nav-btn--next { right: clamp(12px, 3.5vw, 42px); }
+
+.scrapbook__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(48px + var(--safe-bottom));
+  text-align: center;
+  padding: 0 80px;
+  z-index: 10;
+}
+.scrapbook__continue {
+  pointer-events: none;
+  background: rgba(245, 158, 11, 0.9);
+  color: #1e1408;
+  border: 1.5px solid #fef08a;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+}
+.scrapbook__continue:hover {
+  background: #fbbf24;
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+  transform: translateY(-2px);
+}
+.scrapbook__continue.is-ready { pointer-events: auto; }
+
+/* ─── The book ─── */
+.book__stage {
+  position: relative;
+  width: calc(var(--page-w) * 2);
+  max-width: calc(100vw - 12px);
+  height: var(--page-h);
+  perspective: 2600px;
+  perspective-origin: 50% 50%;
+}
+.book {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.book__board {          /* the back cover, always underneath the right stack */
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: #cdb58f;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+.sheet {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--paper);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.face--front { border-radius: 0 6px 6px 0; }
+.face--back  { transform: rotateY(180deg); border-radius: 6px 0 0 6px; }
+.face::before { /* punched holes along the spine */
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  background-image: radial-gradient(circle, rgba(20, 22, 30, 0.9) 0 3.5px, transparent 4px);
+  background-size: 14px calc(100% / 16);
+  background-repeat: repeat-y;
+  z-index: 3;
+  pointer-events: none;
+}
+.face--front::before { left: 8px; }
+.face--back::before  { right: 8px; }
+.face__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.face__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.35));
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* ─── Spiral rings ─── */
+.book__spiral {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 100%;
+  z-index: 300;
+  transform: translateZ(6px);
+  pointer-events: none;
+}
+.ring {
+  position: absolute;
+  left: -16px;
+  width: 32px;
+  height: 9px;
+  border-radius: 6px;
+  border: 2px solid #fef08a;
+  background: linear-gradient(135deg, #fef08a 0%, #f59e0b 45%, #b45309 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+  transform: translateY(-50%) rotate(-8deg);
+}
+
+/* ─── Cover collage (used when no cover image is configured) ─── */
+.cover__paper {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgba(255, 255, 255, 0.25), transparent 60%),
+    linear-gradient(160deg, #c49868 0%, #a47647 50%, #7d542d 100%);
+}
+.cover__paper--leather {
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgba(255, 255, 255, 0.22), transparent 60%),
+    linear-gradient(160deg, #c49868 0%, #a47647 48%, #7e532b 100%);
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.45);
+}
+.cover__paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/images/background/paper.svg');
+  background-size: 300px 300px;
+  opacity: 0.45;
+  mix-blend-mode: multiply;
+}
+.cover__paper::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1.5px dashed rgba(254, 240, 138, 0.5);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(60, 35, 15, 0.4);
+  pointer-events: none;
+  z-index: 2;
+}
+.cover__paper--light {
+  background: linear-gradient(160deg, #fbf7ee 0%, #efe8d8 100%);
+}
+
+/* Brass Corner Protectors */
+.cover__corner {
+  position: absolute;
+  width: clamp(26px, calc(var(--page-w) * 0.11), 38px);
+  height: clamp(26px, calc(var(--page-w) * 0.11), 38px);
+  z-index: 6;
+  pointer-events: none;
+}
+.cover__corner--tr {
+  top: 0;
+  right: 0;
+  background: linear-gradient(225deg, #fef08a 0%, #f59e0b 50%, #b45309 100%);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.35);
+}
+.cover__corner--br {
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #b45309 100%);
+  clip-path: polygon(100% 100%, 0 100%, 100% 0);
+  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.35);
+}
+
+/* Satin Bookmark Ribbon with Golden Charm */
+.cover__ribbon {
+  position: absolute;
+  left: 42%;
+  bottom: -28px;
+  width: 20px;
+  height: 48px;
+  background: linear-gradient(to right, #991b1b, #dc2626 50%, #7f1d1d);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+  z-index: 10;
+  pointer-events: none;
+  transform-origin: top center;
+  animation: ribbonSway 4.5s ease-in-out infinite;
+}
+.cover__ribbon-charm {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #fef08a;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+@keyframes ribbonSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(4deg); }
+}
+
+/* ─── Luxury Brass Diary Plaque ─── */
+.diary__plaque {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: clamp(170px, calc(var(--page-w) * 0.74), 250px);
+  padding: 12px 14px 14px;
+  background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 35%, #fde68a 65%, #f59e0b 100%);
+  border: 2px solid #b45309;
+  border-radius: 6px;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.9),
+    inset 0 -1.5px 2px rgba(120, 53, 15, 0.45);
+  text-align: center;
+  z-index: 5;
+  user-select: none;
+}
+.diary__rivet {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #92400e;
+  box-shadow: inset 0 1px 1px #fff, 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+.diary__rivet--tl { top: 4px; left: 4px; }
+.diary__rivet--tr { top: 4px; right: 4px; }
+.diary__rivet--bl { bottom: 4px; left: 4px; }
+.diary__rivet--br { bottom: 4px; right: 4px; }
+.diary__plaque-kicker {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: clamp(0.48rem, calc(var(--page-w) * 0.027), 0.6rem);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #78350f;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.diary__plaque-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.2rem, calc(var(--page-w) * 0.086), 1.85rem);
+  font-weight: 700;
+  color: #451a03;
+  line-height: 1.15;
+  margin: 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.diary__plaque-sub {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: clamp(0.44rem, calc(var(--page-w) * 0.025), 0.56rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #92400e;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+/* ─── Elastic Closure Band ─── */
+.diary__band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 22px;
+  width: 13px;
+  background: linear-gradient(to right, #1c140f 0%, #36261d 50%, #150e0a 100%);
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.4), 2px 0 6px rgba(0, 0, 0, 0.4);
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ─── Attached Rose-Gold Pen ─── */
+.diary__pen {
+  position: absolute;
+  top: 24%;
+  right: -9px;
+  width: 9px;
+  height: 105px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #fb7185 0%, #fecdd3 40%, #e11d48 100%);
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
+  z-index: 12;
+  pointer-events: none;
+}
+.diary__pen-clip {
+  position: absolute;
+  top: 12px;
+  left: -2px;
+  width: 3.5px;
+  height: 36px;
+  background: #fef08a;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Cover Polaroid Photo with Paperclip ─── */
+.diary__cover-snap {
+  position: absolute;
+  left: 9%;
+  top: 8%;
+  width: clamp(80px, calc(var(--page-w) * 0.36), 125px);
+  padding: 5px 5px 12px;
+  background: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  transform: rotate(-6deg);
+  z-index: 3;
+}
+.diary__cover-snap img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 1px;
+}
+.diary__snap-caption {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-hand);
+  font-size: clamp(0.75rem, calc(var(--page-w) * 0.05), 0.95rem);
+  color: #292524;
+  text-align: center;
+  line-height: 1;
+}
+.diary__paperclip {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  width: 11px;
+  height: 26px;
+  border: 2px solid #f59e0b;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transform: rotate(8deg);
+}
+
+/* ─── Pressed Flower with Tape ─── */
+.diary__pressed-flower {
+  position: absolute;
+  right: 12%;
+  bottom: 10%;
+  width: clamp(50px, calc(var(--page-w) * 0.22), 75px);
+  z-index: 3;
+  transform: rotate(14deg);
+}
+.diary__pressed-flower img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+.diary__flower-tape {
+  position: absolute;
+  top: 25%;
+  left: -8px;
+  width: 40px;
+  height: 13px;
+  background: rgba(254, 215, 170, 0.85);
+  border-left: 1.5px dashed rgba(217, 119, 6, 0.4);
+  border-right: 1.5px dashed rgba(217, 119, 6, 0.4);
+  transform: rotate(-24deg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.diary__star-accent {
+  position: absolute;
+  left: 14%;
+  bottom: 12%;
+  width: clamp(24px, calc(var(--page-w) * 0.1), 36px);
+  z-index: 3;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+/* Vintage Postmark Stamp */
+.cover__stamp {
+  position: absolute;
+  right: 10%;
+  top: 8%;
+  width: clamp(44px, calc(var(--page-w) * 0.15), 58px);
+  height: clamp(44px, calc(var(--page-w) * 0.15), 58px);
+  border-radius: 50%;
+  border: 1.5px dashed rgba(185, 28, 28, 0.65);
+  color: #b91c1c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: clamp(0.36rem, calc(var(--page-w) * 0.022), 0.46rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(15deg);
+  opacity: 0.82;
+  pointer-events: none;
+  z-index: 4;
+}
+.cover__stamp strong {
+  font-size: clamp(0.52rem, calc(var(--page-w) * 0.033), 0.68rem);
+  letter-spacing: 0.04em;
+  margin: 1px 0;
+}
+
+/* ─── Real Lined Diary Inside Pages ─── */
+.face--page {
+  background-color: #fdfbf7;
+  background-image:
+    linear-gradient(to right, rgba(244, 63, 94, 0.28) 1px, transparent 1px),
+    repeating-linear-gradient(to bottom, transparent 0px, transparent 25px, rgba(148, 163, 184, 0.26) 26px);
+  background-size: 100% 100%, 100% 26px;
+  background-position: 36px 0, 0 34px;
+}
+
+.diary__page-header {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.6rem, calc(var(--page-w) * 0.036), 0.74rem);
+  color: #78716c;
+  z-index: 4;
+}
+.face--back .diary__page-header  { right: 26px; left: 16px; }
+.face--front .diary__page-header { left: 26px; right: 16px; }
+.diary__header-date { font-weight: 600; color: #991b1b; }
+.diary__header-mood { font-style: normal; }
+.diary__header-page { font-weight: 600; }
+
+/* ─── Dedicated Mounted Photo Section in Diary ─── */
+/* ─── Dedicated Mounted Photo Section in Diary ─── */
+.diary__photo-section {
+  position: absolute;
+  top: 7.5%;
+  z-index: 3;
+  user-select: none;
+  width: clamp(110px, calc(var(--page-w) * 0.48), 160px);
+}
+.diary__photo-section--left {
+  left: 51%;
+  transform: translateX(-50%) rotate(-1.5deg);
+}
+.diary__photo-section--right {
+  left: 49%;
+  transform: translateX(-50%) rotate(1.5deg);
+}
+
+.diary__photo-card {
+  position: relative;
+  padding: 5px 5px 8px;
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: 0 8px 20px rgba(30, 20, 10, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.diary__photo-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 26px rgba(30, 20, 10, 0.28);
+}
+
+.diary__photo-img-wrap {
+  width: 100%;
+  aspect-ratio: 1.28;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f1ede4;
+}
+.diary__photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  filter: saturate(1.05) contrast(1.02);
+}
+
+.diary__photo-caption {
+  margin-top: 4px;
+  font-family: var(--font-hand);
+  font-size: clamp(0.7rem, calc(var(--page-w) * 0.044), 0.9rem);
+  font-weight: 700;
+  color: #44403c;
+  text-align: center;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.diary__photo-tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 44px;
+  height: 14px;
+  background: rgba(254, 215, 170, 0.88);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255, 255, 255, 0.45) 3px, rgba(255, 255, 255, 0.45) 6px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border-left: 2px dashed rgba(217, 119, 6, 0.35);
+  border-right: 2px dashed rgba(217, 119, 6, 0.35);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ─── Notes on pages (Paperclip Diary Note) ─── */
+.face__note {
+  position: absolute;
+  top: 46%;
+  width: clamp(160px, calc(var(--page-w) * 0.86), 285px);
+  max-width: 90%;
+  padding: 8px 12px 10px;
+  background: rgba(255, 253, 247, 0.98);
+  color: var(--ink);
+  box-shadow: 0 8px 20px rgba(30, 20, 10, 0.2);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 4;
+}
+.face__note--left {
+  left: 49%;
+  transform: translateX(-50%) rotate(1deg);
+}
+.face__note--right {
+  left: 51%;
+  transform: translateX(-50%) rotate(-1deg);
+}
+.diary__note-paperclip {
+  position: absolute;
+  top: -9px;
+  left: 18px;
+  width: 10px;
+  height: 24px;
+  border: 2px solid #f59e0b;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transform: rotate(-5deg);
+}
+.face__note::before { /* tape */
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 18px;
+  width: 48px;
+  height: 15px;
+  transform: rotate(3deg);
+  background: url('/images/decorations/tape.svg') center / 100% 100% no-repeat;
+  opacity: 0.85;
+}
+.face__note-title {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(0.98rem, calc(var(--page-w) * 0.065), 1.35rem);
+  line-height: 1.1;
+  color: #b8322d;
+}
+.face__note-text {
+  margin-top: 3px;
+  font-family: var(--font-hand);
+  font-size: clamp(0.88rem, calc(var(--page-w) * 0.054), 1.18rem);
+  line-height: 1.28;
+  color: #3b352e;
+}
+
+/* ─── Funny & Teasing Note Postscript ─── */
+.diary__note-tease {
+  margin-top: 6px;
+  padding: 4px 7px;
+  background: rgba(254, 240, 138, 0.5);
+  border-left: 2.5px solid #d97706;
+  border-radius: 3px;
+  font-family: var(--font-hand);
+  font-size: clamp(0.78rem, calc(var(--page-w) * 0.048), 1.05rem);
+  font-style: italic;
+  font-weight: 700;
+  color: #92400e;
+  line-height: 1.22;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.diary__tease-icon {
+  color: #d97706;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  flex-shrink: 0;
+}
+.diary__tease-text {
+  flex: 1;
+}
+
+/* ─── Teasing Polaroid Doodle Tag ─── */
+.diary__photo-doodle {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 1px 6px;
+  background: rgba(254, 215, 170, 0.55);
+  border: 1px dashed rgba(217, 119, 6, 0.5);
+  border-radius: 999px;
+  font-family: var(--font-hand);
+  font-size: clamp(0.65rem, calc(var(--page-w) * 0.038), 0.82rem);
+  font-weight: 700;
+  color: #9a3412;
+  text-align: center;
+  transform: rotate(-1.5deg);
+}
+
+/* ─── Dear Diary Ending Entry ─── */
+.diary__end-entry {
+  position: absolute;
+  inset: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 15px;
+  z-index: 4;
+}
+
+.diary__end-kicker {
+  font-family: var(--font-sans);
+  font-size: clamp(0.55rem, calc(var(--page-w) * 0.032), 0.68rem);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #991b1b;
+  margin: 0;
+}
+
+.diary__end-divider {
+  width: 44px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(180, 83, 9, 0.45), transparent);
+  margin: -6px 0 0;
+}
+
+.face__end {
+  position: static;
+  margin: 0;
+  max-width: 86%;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: clamp(1.15rem, calc(var(--page-w) * 0.068), 1.6rem);
+  line-height: 1.45;
+  color: #3b352e;
+}
+
+.face__end-heart {
+  position: static;
+  margin: 0;
+  text-align: center;
+  color: #f59e0b;
+  font-size: 1.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 5px rgba(245, 158, 11, 0.45));
+}
+
+.diary__end-sign {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.05rem, calc(var(--page-w) * 0.062), 1.35rem);
+  font-weight: 600;
+  color: #78350f;
+}
+
+.diary__end-date {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.72rem, calc(var(--page-w) * 0.04), 0.85rem);
+  color: #a8a29e;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .scrapbook__layout { padding: calc(48px + var(--safe-top)) 6px calc(60px + var(--safe-bottom)); }
+  .scrapbook__hint { bottom: calc(96px + var(--safe-bottom)); padding: 0 20px; font-size: 0.65rem; }
+  .ring { left: -10px; width: 20px; height: 6px; }
+  .face::before { width: 8px; background-image: radial-gradient(circle, rgba(20, 22, 30, 0.9) 0 2px, transparent 2.5px); background-size: 8px calc(100% / 16); }
+  .face--front::before { left: 4px; }
+  .face--back::before  { right: 4px; }
+  .diary__photo-section { top: 6.5%; width: 54%; }
+  .diary__photo-card { padding: 3px 3px 5px; }
+  .diary__photo-caption { font-size: 0.58rem; margin-top: 1px; }
+  .diary__photo-doodle { font-size: 0.48rem; padding: 1px 4px; margin-top: 1px; }
+  .diary__photo-tape { width: 34px; height: 11px; top: -6px; }
+  .face__note { top: 45%; max-width: 90%; padding: 5px 7px 6px; }
+  .face__note-title { font-size: 0.74rem; }
+  .face__note-text { font-size: 0.56rem; line-height: 1.22; margin-top: 2px; }
+  .diary__note-tease { font-size: 0.50rem; padding: 2px 4px; margin-top: 2px; gap: 3px; }
+  .diary__note-paperclip { width: 8px; height: 18px; top: -6px; left: 10px; }
+  .diary__end-entry { inset: 14px 8px; gap: 6px; }
+  .diary__end-kicker { font-size: 0.54rem; letter-spacing: 0.1em; }
+  .face__end { font-size: 0.9rem; line-height: 1.35; max-width: 95%; }
+  .diary__end-sign { font-size: 0.85rem; }
+  .face__end-heart { font-size: 1.15rem; }
+  .diary__end-date { font-size: 0.65rem; }
+  .scrapbook__nav-btn { width: 34px; height: 34px; font-size: 1.3rem; }
+  .scrapbook__nav-btn--prev { left: 4px; }
+  .scrapbook__nav-btn--next { right: 4px; }
+  .scrapbook__badge {
+    top: calc(52px + var(--safe-top));
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    max-width: calc(100% - 24px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ─── Page numbers on inside spreads ─── */
+.face__page-num {
+  position: absolute;
+  bottom: 12px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.68rem, calc(var(--page-w) * 0.045), 0.85rem);
+  font-weight: 600;
+  color: rgba(50, 40, 30, 0.45);
+  letter-spacing: 0.08em;
+  z-index: 5;
+  pointer-events: none;
+}
+.face__page-num--left { left: 24px; }
+.face__page-num--right { right: 24px; }
+
+/* ─── Desk Glow & Fairy Lights ─── */
+.scrapbook__desk-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(254, 240, 138, 0.12) 0%, rgba(245, 158, 11, 0.06) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scrapbook__light {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(14px);
+  z-index: 2;
+  animation: floatLight 6s ease-in-out infinite alternate;
+}
+.scrapbook__light--1 { width: 140px; height: 140px; top: 12%; left: 8%; background: rgba(245, 158, 11, 0.12); animation-delay: 0s; }
+.scrapbook__light--2 { width: 180px; height: 180px; bottom: 15%; left: 12%; background: rgba(236, 72, 153, 0.08); animation-delay: -2s; }
+.scrapbook__light--3 { width: 150px; height: 150px; top: 18%; right: 10%; background: rgba(168, 85, 247, 0.1); animation-delay: -4s; }
+.scrapbook__light--4 { width: 120px; height: 120px; bottom: 18%; right: 14%; background: rgba(254, 240, 138, 0.12); animation-delay: -1s; }
+
+@keyframes floatLight {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  100% { transform: translate(14px, -20px) scale(1.15); opacity: 1; }
+}
+
+/* ─── Pulse prompt on Next Arrow when on cover ─── */
+.scrapbook__nav-btn--pulse {
+  animation: navPulse 2s infinite ease-in-out;
+  border-color: rgba(245, 158, 11, 0.85) !important;
+  background: rgba(245, 158, 11, 0.25) !important;
+}
+@keyframes navPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); transform: translateY(-50%) scale(1); }
+  50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); transform: translateY(-50%) scale(1.08); }
+}
