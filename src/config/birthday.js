@@ -92,8 +92,8 @@ export const birthdayConfig = {
       {
         image: '/images/photos/twilight-sparklers.jpg',
         title: 'Chapter 02 · Unmatched Energy',
-        text: '“Your laugh could literally wake up the entire neighborhood, but it’s completely contagious. 3 hours on the phone feels like 5 minutes of non-stop comedy ⚡”',
-        mood: 'Mood: ⚡ Pure Chaos',
+        text: '“Brings so much vibrant energy into the room that it’s impossible not to smile around you. 0% dull moments 💫”',
+        mood: 'Mood: ⚡ Pure Sunshine',
       },
       {
         image: '/images/photos/photo-blossom-walk.jpg',
@@ -103,9 +103,9 @@ export const birthdayConfig = {
       },
       {
         image: '/images/photos/hero-twilight.jpg',
-        title: 'Chapter 04 · "Intimidating"',
-        text: '“Always tries so hard to act scary and serious, but has the intimidation level of an angry golden retriever puppy. Can’t stay mad for 4 minutes 🐶🌸”',
-        mood: 'Mood: 🐶 Golden Retriever',
+        title: 'Chapter 04 · Secret Softie',
+        text: '“Loves to act cool and nonchalant, but secretly has the warmest, sweetest heart ever 🌸✨”',
+        mood: 'Mood: 🌸 Secret Softie',
       },
       {
         image: '/images/photos/cozy-chocolate.jpg',
