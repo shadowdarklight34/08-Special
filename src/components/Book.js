@@ -145,10 +145,9 @@ export class Book {
     const pageNum = i;
     const isLeft = i % 2 === 1;
 
-    // Inside Diary Header (Date, Mood, Entry)
+    // Inside Diary Header (Date & Page Number)
     const header = el('div', { class: 'diary__page-header' }, [
-      el('span', { class: 'diary__header-date', text: '📅 Sept 08' }),
-      el('span', { class: 'diary__header-mood', text: mood || 'Mood: ✨ 10/10' }),
+      el('span', { class: 'diary__header-date', text: '08 Sept' }),
       el('span', { class: 'diary__header-page', text: `Page ${pageNum}` }),
     ]);
 
@@ -185,6 +184,7 @@ export class Book {
     if (title || text) {
       const noteChildren = [
         el('div', { class: 'diary__note-paperclip', 'aria-hidden': 'true' }),
+        mood ? el('div', { class: 'diary__note-mood-badge', text: mood }) : null,
         title ? el('h3', { class: 'face__note-title diary__note-title', text: title }) : null,
         text ? el('p', { class: 'face__note-text diary__note-text', text }) : null,
       ];
@@ -216,6 +216,12 @@ export class Book {
       const done = k < this.flipped;
       sheet.style.zIndex = String(done ? k + 1 : S - k);
       gsap.set(sheet, { rotationY: done ? -180 : 0, z: (done ? k + 1 : S - k) * 0.4 });
+
+      // Hardware-level visibility toggle: prevents reverse face from rendering mirrored in Safari / WebKit
+      const front = sheet.querySelector('.face--front');
+      const back = sheet.querySelector('.face--back');
+      if (front) front.style.visibility = done ? 'hidden' : 'visible';
+      if (back) back.style.visibility = done ? 'visible' : 'hidden';
     });
   }
 
@@ -246,6 +252,8 @@ export class Book {
     this.turning = true;
 
     const sheet = this.sheets[k];
+    const front = sheet.querySelector('.face--front');
+    const back = sheet.querySelector('.face--back');
     const wasClosed = !this.isOpen;
     const shades = sheet.querySelectorAll('.face__shade');
     sheet.style.zIndex = String(this.sheets.length * 2 + 5);
@@ -259,7 +267,13 @@ export class Book {
     await gsap.to(proxy, {
       p: 1, duration: this.reducedMotion ? 0.35 : 1.15, ease: 'power2.inOut',
       onUpdate: () => {
-        gsap.set(sheet, { rotationY: from + (to - from) * proxy.p, z: 2 });
+        const angle = from + (to - from) * proxy.p;
+        gsap.set(sheet, { rotationY: angle, z: 2 });
+        // At the 90-degree mark, toggle face visibility so the back never shows mirrored
+        const isFlipped = Math.abs(angle) > 90;
+        if (front) front.style.visibility = isFlipped ? 'hidden' : 'visible';
+        if (back) back.style.visibility = isFlipped ? 'visible' : 'hidden';
+
         const s = Math.sin(proxy.p * Math.PI) * 0.45;
         shades.forEach((sh) => { sh.style.opacity = String(s); });
       },

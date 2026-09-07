@@ -151,10 +151,18 @@
   background: var(--paper);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transform-style: flat;
+  -webkit-transform-style: flat;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
-.face--front { border-radius: 0 6px 6px 0; }
-.face--back  { transform: rotateY(180deg); border-radius: 6px 0 0 6px; }
+.face--front {
+  border-radius: 0 6px 6px 0;
+  transform: rotateY(0deg);
+}
+.face--back {
+  border-radius: 6px 0 0 6px;
+  transform: rotateY(180deg);
+}
 .face::before { /* punched holes along the spine */
   content: '';
   position: absolute;
@@ -526,15 +534,28 @@
   border-bottom: 1px solid rgba(148, 163, 184, 0.35);
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(0.6rem, calc(var(--page-w) * 0.036), 0.74rem);
+  font-size: clamp(0.62rem, calc(var(--page-w) * 0.038), 0.76rem);
   color: #78716c;
   z-index: 4;
 }
 .face--back .diary__page-header  { right: 26px; left: 16px; }
 .face--front .diary__page-header { left: 26px; right: 16px; }
-.diary__header-date { font-weight: 600; color: #991b1b; }
-.diary__header-mood { font-style: normal; }
-.diary__header-page { font-weight: 600; }
+.diary__header-date { font-weight: 700; color: #991b1b; letter-spacing: 0.04em; }
+.diary__header-page { font-weight: 600; color: #78716c; }
+
+.diary__note-mood-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: clamp(0.55rem, calc(var(--page-w) * 0.032), 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #854d0e;
+  background: rgba(254, 240, 138, 0.65);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-bottom: 4px;
+}
 
 /* ─── Dedicated Mounted Photo Section in Diary ─── */
 /* ─── Dedicated Mounted Photo Section in Diary ─── */
