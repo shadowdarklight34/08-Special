@@ -36,10 +36,9 @@ export function createPhotoTrail(container, {
     let d;
     if (isPortrait) {
       // Mobile / Portrait:
-      // Flow smoothly across the lower section (y: ~68% to 76% of screen)
-      // Generously below headline, tagline, and hint badge
-      const yMid = H * 0.70;
-      const amp = Math.min(30, H * 0.038);
+      // Perfectly centered in the open window between hint badge (~44%) and Continue button (~86%)
+      const yMid = H * 0.60;
+      const amp = Math.min(20, H * 0.025);
       d = `M ${-140} ${yMid} C ${W * 0.22} ${yMid - amp}, ${W * 0.46} ${yMid + amp}, ${W * 0.72} ${yMid - amp * 0.8} C ${W * 0.88} ${yMid + amp * 0.6}, ${W * 1.05} ${yMid - amp * 0.3}, ${W + 160} ${yMid}`;
     } else {
       // Desktop / Landscape:

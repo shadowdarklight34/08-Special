@@ -375,7 +375,7 @@
   .hero__copy {
     left: 20px;
     right: 20px;
-    top: calc(9% + var(--safe-top));
+    top: calc(7% + var(--safe-top));
     transform: none;
     max-width: none;
     pointer-events: none;
@@ -384,40 +384,41 @@
     pointer-events: auto;
   }
   .hero__badge {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     font-size: 0.68rem;
   }
   .hero__title {
-    font-size: clamp(2.4rem, 11vw, 3.4rem);
+    font-size: clamp(2.3rem, 10vw, 3.2rem);
     line-height: 1.05;
   }
   .hero__rule-wrap {
-    margin: 14px 0 10px;
-    width: 170px;
+    margin: 12px 0 8px;
+    width: 160px;
   }
   .hero__tagline {
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     max-width: 32ch;
-    line-height: 1.5;
+    line-height: 1.45;
   }
   .hero__hint {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 0.72rem;
-    padding: 6px 14px;
+    padding: 5px 14px;
   }
   .trail__tile {
-    width: clamp(90px, 24vw, 115px);
-    padding: 5px 5px 12px;
+    width: clamp(86px, 23vw, 106px);
+    padding: 5px 5px 11px;
   }
   .trail__chin-caption {
-    font-size: 0.72rem;
-    margin-top: 4px;
+    font-size: 0.7rem;
+    margin-top: 3px;
   }
   .hero__continue-btn {
-    bottom: calc(20px + var(--safe-bottom));
-    right: 20px;
-    padding: 11px 24px;
-    font-size: 0.9rem;
+    bottom: calc(18px + var(--safe-bottom));
+    right: 18px;
+    padding: 10px 22px;
+    font-size: 0.88rem;
+    z-index: 10;
   }
 }
 
