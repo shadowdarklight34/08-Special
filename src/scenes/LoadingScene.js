@@ -59,11 +59,9 @@ export class LoadingScene extends BaseScene {
 
   async preload() {
     try {
-      const { photos, scrapbook } = this.config;
+      const { photos } = this.config;
       const images = [
-        ...photos.slice(0, 8).map((p) => asset(p.src)),
-        ...scrapbook.pages.slice(0, 2).map((p) => asset(p.image)),
-        scrapbook.cover?.image ? asset(scrapbook.cover.image) : null,
+        photos[0]?.src ? asset(photos[0].src) : null,
         asset('/images/background/paper.svg'),
         asset('/images/decorations/tape.svg'),
       ].filter(Boolean);

@@ -26,7 +26,7 @@ export class AudioManager {
     this.audio = new Audio();
     this.audio.src = this.currentTrack.source;
     this.audio.loop = this.playlist.length === 1;
-    this.audio.preload = 'auto';
+    this.audio.preload = 'none';
     this.audio.volume = 0;
     this.audio.setAttribute('playsinline', '');
 

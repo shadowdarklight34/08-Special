@@ -73,8 +73,12 @@ window.addEventListener('resize', () => {
     state.set({ tier: t, isMobile: t === 'mobile' });
   }, 150);
 });
-window.matchMedia('(prefers-reduced-motion: reduce)')
-  .addEventListener('change', (e) => state.set({ reducedMotion: config.respectReducedMotion && e.matches }));
+const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+if (motionQuery?.addEventListener) {
+  motionQuery.addEventListener('change', (e) => state.set({ reducedMotion: config.respectReducedMotion && e.matches }));
+} else if (motionQuery?.addListener) {
+  motionQuery.addListener((e) => state.set({ reducedMotion: config.respectReducedMotion && e.matches }));
+}
 
 manager.goTo('loading');
 
