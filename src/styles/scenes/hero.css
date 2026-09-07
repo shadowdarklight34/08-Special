@@ -375,7 +375,7 @@
   .hero__copy {
     left: 20px;
     right: 20px;
-    top: calc(7% + var(--safe-top));
+    top: calc(46px + var(--safe-top));
     transform: none;
     max-width: none;
     pointer-events: none;
@@ -384,33 +384,54 @@
     pointer-events: auto;
   }
   .hero__badge {
-    margin-bottom: 10px;
-    font-size: 0.68rem;
+    margin-bottom: 8px;
+    font-size: 0.64rem;
+    padding: 4px 12px;
+    gap: 6px;
+    max-width: fit-content;
   }
   .hero__title {
-    font-size: clamp(2.3rem, 10vw, 3.2rem);
-    line-height: 1.05;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .hero__happy {
+    font-size: clamp(1.75rem, 6.8vw, 2.3rem);
+    margin-bottom: 0;
+  }
+  .hero__bday {
+    font-size: clamp(2rem, 7.8vw, 2.7rem);
+    margin-top: -0.04em;
+  }
+  .hero__name {
+    font-size: clamp(2.2rem, 8.6vw, 3rem);
+  }
+  .hero__crown {
+    width: clamp(22px, 5.8vw, 30px);
+    height: clamp(16px, 4.2vw, 22px);
+    top: -0.36em;
+    right: -0.44em;
   }
   .hero__rule-wrap {
-    margin: 12px 0 8px;
-    width: 160px;
+    margin: 8px 0 6px;
+    width: 140px;
   }
   .hero__tagline {
-    font-size: 0.84rem;
+    font-size: clamp(0.78rem, 3.2vw, 0.88rem);
     max-width: 32ch;
-    line-height: 1.45;
+    line-height: 1.4;
   }
   .hero__hint {
-    margin-top: 10px;
-    font-size: 0.72rem;
-    padding: 5px 14px;
+    margin-top: 8px;
+    font-size: 0.70rem;
+    padding: 4px 12px;
+    gap: 6px;
   }
   .trail__tile {
-    width: clamp(86px, 23vw, 106px);
-    padding: 5px 5px 11px;
+    width: clamp(82px, 22vw, 100px);
+    padding: 5px 5px 10px;
   }
   .trail__chin-caption {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     margin-top: 3px;
   }
   .hero__continue-btn {
@@ -430,3 +451,4 @@
     width: clamp(105px, 14vw, 130px);
   }
 }
+

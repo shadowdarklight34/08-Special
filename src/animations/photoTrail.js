@@ -35,10 +35,46 @@ export function createPhotoTrail(container, {
 
     let d;
     if (isPortrait) {
-      // Mobile / Portrait:
-      // Perfectly centered in the open window between hint badge (~44%) and Continue button (~86%)
-      const yMid = H * 0.60;
-      const amp = Math.min(20, H * 0.025);
+      // Dynamic vertical boundary measurement to strictly guarantee ZERO overlap with text above and button below
+      const copyEl = document.querySelector('.hero__copy');
+      const continueBtn = document.querySelector('.hero__continue-btn');
+      
+      let copyBottom = H * 0.40;
+      let btnTop = H * 0.88;
+
+      if (copyEl) {
+        const copyRect = copyEl.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        if (copyRect.height > 0) {
+          copyBottom = copyRect.bottom - containerRect.top;
+        }
+      }
+      if (continueBtn) {
+        const btnRect = continueBtn.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        if (btnRect.height > 0) {
+          btnTop = btnRect.top - containerRect.top;
+        }
+      }
+
+      // Safe vertical corridor
+      const safeTop = copyBottom + 16;
+      const safeBottom = btnTop - 16;
+      
+      // Tile vertical extent (tile height is ~110px + tape 8px = ~118px => half height ~59px)
+      const tileHalfHeight = Math.min(58, Math.max(44, W * 0.14));
+      
+      // Calculate ideal center of the available clear corridor
+      const availableSpace = Math.max(80, safeBottom - safeTop);
+      let yMid = safeTop + availableSpace * 0.50;
+      
+      // Compute safe amplitude that never pushes tiles into copy or buttons
+      const maxAllowedAmp = Math.max(0, (availableSpace - tileHalfHeight * 2) * 0.32);
+      const amp = Math.min(14, Math.max(4, maxAllowedAmp));
+      
+      // Guarantee bounds
+      yMid = Math.max(safeTop + tileHalfHeight + amp, Math.min(safeBottom - tileHalfHeight - amp, yMid));
+
       d = `M ${-140} ${yMid} C ${W * 0.22} ${yMid - amp}, ${W * 0.46} ${yMid + amp}, ${W * 0.72} ${yMid - amp * 0.8} C ${W * 0.88} ${yMid + amp * 0.6}, ${W * 1.05} ${yMid - amp * 0.3}, ${W + 160} ${yMid}`;
     } else {
       // Desktop / Landscape:
@@ -61,6 +97,10 @@ export function createPhotoTrail(container, {
   };
 
   buildPathTable();
+  requestAnimationFrame(() => {
+    buildPathTable();
+    tiles.forEach(place);
+  });
 
   const at = (u) => {
     const f = (((u % 1) + 1) % 1) * SAMPLES;
